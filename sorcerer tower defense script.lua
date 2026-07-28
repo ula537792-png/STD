@@ -68,9 +68,9 @@ welcomeText.BackgroundTransparency = 1
 welcomeText.TextTransparency = 1
 welcomeText.ZIndex = 6
 
--- ГЛАВНОЕ ОКНО (ФИКСИРОВАННЫЙ УДОБНЫЙ РАЗМЕР ВЕЗДЕ)
+-- ГЛАВНОЕ ОКНО (Адаптивное для мобилок, фиксированное для ПК)
 local main = Instance.new("Frame", screenGui)
-main.Size = UDim2.new(0, 920, 0, 560)
+main.Size = UDim2.new(0.85, 0, 0.8, 0) -- Автоматически подстраивается под экран телефона
 main.Position = UDim2.new(0.5, 0, 0.5, 0)
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.BackgroundColor3 = UI_COLORS.BG
@@ -80,10 +80,10 @@ main.BackgroundTransparency = 1
 main.ClipsDescendants = true
 main.Active = true
 
--- Жесткий фиксатор размера, чтобы хаб был одинаковым и не ломался на экранах
+-- Ограничители: на ПК не станет огромным, на телефоне не выйдет за рамки
 local sizeConstraint = Instance.new("UISizeConstraint", main)
-sizeConstraint.MinSize = Vector2.new(920, 560)
-sizeConstraint.MaxSize = Vector2.new(920, 560)
+sizeConstraint.MinSize = Vector2.new(450, 320)
+sizeConstraint.MaxSize = Vector2.new(900, 520)
 
 local mainStroke = Instance.new("UIStroke", main)
 mainStroke.Color = UI_COLORS.TAB_ACTIVE
@@ -116,7 +116,7 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Фоновые частицы (минималистичные)
+-- Фоновые частицы
 local bgContainer = Instance.new("Frame", main)
 bgContainer.Size = UDim2.new(1, 0, 1, 0)
 bgContainer.BackgroundTransparency = 1
@@ -158,7 +158,7 @@ end
 
 -- САЙДБАР
 local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.new(0, 210, 1, 0)
+sidebar.Size = UDim2.new(0, 200, 1, 0)
 sidebar.BackgroundColor3 = UI_COLORS.SIDEBAR
 Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0, 14)
 
@@ -169,11 +169,11 @@ sideCover.BackgroundColor3 = UI_COLORS.SIDEBAR
 sideCover.BorderSizePixel = 0
 
 local logo = Instance.new("TextLabel", sidebar)
-logo.Size = UDim2.new(1, 0, 0, 80)
+logo.Size = UDim2.new(1, 0, 0, 75)
 logo.BackgroundTransparency = 1
 logo.Text = "INVERIUM"
 logo.Font = Enum.Font.GothamBlack
-logo.TextSize = 20
+logo.TextSize = 18
 logo.TextColor3 = UI_COLORS.TEXT
 
 local logoGlow = Instance.new("UIStroke", logo)
@@ -183,13 +183,13 @@ logoGlow.Transparency = 0.6
 
 local function createTabButton(name, y)
 	local b = Instance.new("TextButton", sidebar)
-	b.Size = UDim2.new(1, -20, 0, 44)
-	b.Position = UDim2.new(0, 10, 0, y)
+	b.Size = UDim2.new(1, -16, 0, 40)
+	b.Position = UDim2.new(0, 8, 0, y)
 	b.BackgroundColor3 = UI_COLORS.TAB_INACTIVE
 	b.Text = "   " .. name
 	b.TextColor3 = UI_COLORS.TEXT_DIM
 	b.Font = Enum.Font.GothamSemibold
-	b.TextSize = 13
+	b.TextSize = 12
 	b.TextXAlignment = Enum.TextXAlignment.Left
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
 	
@@ -206,15 +206,15 @@ local function createTabButton(name, y)
 	return b
 end
 
-local btnMain = createTabButton("Player", 90)
-local btnInfo = createTabButton("Player Info", 145)
-local btnInv = createTabButton("Dupe", 200)
-local btnTrade = createTabButton("Trade Scam", 255)
+local btnMain = createTabButton("Player", 85)
+local btnInfo = createTabButton("Player Info", 132)
+local btnInv = createTabButton("Dupe", 179)
+local btnTrade = createTabButton("Trade Scam", 226)
 
 -- СТРАНИЦЫ
 local pages = Instance.new("Frame", main)
-pages.Size = UDim2.new(1, -230, 1, -20)
-pages.Position = UDim2.new(0, 220, 0, 10)
+pages.Size = UDim2.new(1, -215, 1, -16)
+pages.Position = UDim2.new(0, 208, 0, 8)
 pages.BackgroundTransparency = 1
 
 local function createPage()
@@ -226,7 +226,7 @@ local function createPage()
 	p.AutomaticCanvasSize = Enum.AutomaticSize.Y
 	p.Visible = false
 	local layout = Instance.new("UIListLayout", p)
-	layout.Padding = UDim.new(0, 10)
+	layout.Padding = UDim.new(0, 8)
 	return p
 end
 
@@ -263,12 +263,12 @@ local noclipEnabled = false
 
 local function addToggle(name, callback)
 	local b = Instance.new("TextButton", mainPage)
-	b.Size = UDim2.new(1, -5, 0, 46)
+	b.Size = UDim2.new(1, -5, 0, 42)
 	b.BackgroundColor3 = UI_COLORS.TAB_INACTIVE
 	b.Text = "    " .. name
 	b.TextColor3 = UI_COLORS.TEXT
 	b.Font = Enum.Font.GothamSemibold
-	b.TextSize = 13
+	b.TextSize = 12
 	b.TextXAlignment = Enum.TextXAlignment.Left
 	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
 
@@ -279,7 +279,7 @@ local function addToggle(name, callback)
 	statusLbl.Text = "OFF"
 	statusLbl.TextColor3 = UI_COLORS.TEXT_DIM
 	statusLbl.Font = Enum.Font.GothamBold
-	statusLbl.TextSize = 12
+	statusLbl.TextSize = 11
 	statusLbl.TextXAlignment = Enum.TextXAlignment.Right
 
 	local state = false
@@ -294,32 +294,32 @@ end
 
 local function addSlider(name, min, max, default, callback)
 	local container = Instance.new("Frame", mainPage)
-	container.Size = UDim2.new(1, -5, 0, 52)
+	container.Size = UDim2.new(1, -5, 0, 48)
 	container.BackgroundTransparency = 1
 	container.ZIndex = 2
 
 	local label = Instance.new("TextLabel", container)
 	label.Text = name .. ": " .. string.format("%.2f", default)
 	label.TextColor3 = UI_COLORS.TEXT
-	label.Size = UDim2.new(1, 0, 0, 20)
+	label.Size = UDim2.new(1, 0, 0, 18)
 	label.BackgroundTransparency = 1
 	label.Font = Enum.Font.GothamSemibold
-	label.TextSize = 13
+	label.TextSize = 12
 	label.TextXAlignment = Enum.TextXAlignment.Left
 	label.ZIndex = 2
 
 	local bg = Instance.new("Frame", container)
-	bg.Size = UDim2.new(1, 0, 0, 10)
-	bg.Position = UDim2.new(0, 0, 0, 26)
+	bg.Size = UDim2.new(1, 0, 0, 8)
+	bg.Position = UDim2.new(0, 0, 0, 24)
 	bg.BackgroundColor3 = UI_COLORS.CHECKBOX_OFF
 	bg.ZIndex = 2
-	Instance.new("UICorner", bg).CornerRadius = UDim.new(0, 5)
+	Instance.new("UICorner", bg).CornerRadius = UDim.new(0, 4)
 
 	local bar = Instance.new("Frame", bg)
 	bar.Size = UDim2.new(math.clamp((default - min) / (max - min), 0, 1), 0, 1, 0)
 	bar.BackgroundColor3 = UI_COLORS.TAB_ACTIVE
 	bar.ZIndex = 2
-	Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 5)
+	Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 4)
 
 	local draggingSlider = false
 	bg.InputBegan:Connect(function(input)
@@ -414,18 +414,18 @@ infoWrapper.BackgroundTransparency = 1
 
 local infoList = Instance.new("UIListLayout", infoWrapper)
 infoList.SortOrder = Enum.SortOrder.LayoutOrder
-infoList.Padding = UDim.new(0, 10)
+infoList.Padding = UDim.new(0, 8)
 
 local topInfoSection = Instance.new("Frame", infoWrapper)
 topInfoSection.LayoutOrder = 1
-topInfoSection.Size = UDim2.new(1, 0, 0, 136)
+topInfoSection.Size = UDim2.new(1, 0, 0, 120)
 topInfoSection.BackgroundTransparency = 1
 
 local avatarFrame = Instance.new("Frame", topInfoSection)
-avatarFrame.Size = UDim2.new(0, 130, 0, 130)
-avatarFrame.Position = UDim2.new(0, 6, 0, 3)
+avatarFrame.Size = UDim2.new(0, 110, 0, 110)
+avatarFrame.Position = UDim2.new(0, 4, 0, 3)
 avatarFrame.BackgroundColor3 = UI_COLORS.SIDEBAR
-Instance.new("UICorner", avatarFrame).CornerRadius = UDim.new(0, 14)
+Instance.new("UICorner", avatarFrame).CornerRadius = UDim.new(0, 12)
 
 local avatarStroke = Instance.new("UIStroke", avatarFrame)
 avatarStroke.Color = UI_COLORS.TAB_ACTIVE
@@ -433,25 +433,25 @@ avatarStroke.Thickness = 1.5
 avatarStroke.Transparency = 0.4
 
 local avatar = Instance.new("ImageLabel", avatarFrame)
-avatar.Size = UDim2.new(1, -10, 1, -10)
-avatar.Position = UDim2.new(0, 5, 0, 5)
+avatar.Size = UDim2.new(1, -8, 1, -8)
+avatar.Position = UDim2.new(0, 4, 0, 4)
 avatar.BackgroundTransparency = 1
-Instance.new("UICorner", avatar).CornerRadius = UDim.new(0, 10)
+Instance.new("UICorner", avatar).CornerRadius = UDim.new(0, 8)
 
 local infoCardsScroll = Instance.new("ScrollingFrame", topInfoSection)
-infoCardsScroll.Size = UDim2.new(1, -148, 0, 130)
-infoCardsScroll.Position = UDim2.new(0, 144, 0, 3)
+infoCardsScroll.Size = UDim2.new(1, -125, 0, 110)
+infoCardsScroll.Position = UDim2.new(0, 120, 0, 3)
 infoCardsScroll.BackgroundTransparency = 1
 infoCardsScroll.ScrollBarThickness = 4
 infoCardsScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 local infoLayoutGrid = Instance.new("UIListLayout", infoCardsScroll)
 infoLayoutGrid.SortOrder = Enum.SortOrder.LayoutOrder
-infoLayoutGrid.Padding = UDim.new(0, 8)
+infoLayoutGrid.Padding = UDim.new(0, 6)
 
 local function createInfoCard(labelTitle)
 	local f = Instance.new("Frame", infoCardsScroll)
-	f.Size = UDim2.new(1, -6, 0, 36)
+	f.Size = UDim2.new(1, -6, 0, 32)
 	f.BackgroundColor3 = UI_COLORS.SIDEBAR
 	Instance.new("UICorner", f).CornerRadius = UDim.new(0, 8)
 	
@@ -460,33 +460,24 @@ local function createInfoCard(labelTitle)
 	stroke.Transparency = 0.85
 	stroke.Thickness = 1
 
-	f.MouseEnter:Connect(function()
-		TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.3}):Play()
-		TweenService:Create(f, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(22, 16, 32)}):Play()
-	end)
-	f.MouseLeave:Connect(function()
-		TweenService:Create(stroke, TweenInfo.new(0.2), {Transparency = 0.85}):Play()
-		TweenService:Create(f, TweenInfo.new(0.2), {BackgroundColor3 = UI_COLORS.SIDEBAR}):Play()
-	end)
-
 	local title = Instance.new("TextLabel", f)
-	title.Size = UDim2.new(1, -12, 0, 14)
-	title.Position = UDim2.new(0, 8, 0, 3)
+	title.Size = UDim2.new(1, -10, 0, 12)
+	title.Position = UDim2.new(0, 6, 0, 3)
 	title.BackgroundTransparency = 1
 	title.Text = labelTitle
 	title.TextColor3 = UI_COLORS.TEXT_DIM
 	title.Font = Enum.Font.GothamBold
-	title.TextSize = 10
+	title.TextSize = 9
 	title.TextXAlignment = Enum.TextXAlignment.Left
 
 	local val = Instance.new("TextLabel", f)
-	val.Size = UDim2.new(1, -12, 0, 18)
-	val.Position = UDim2.new(0, 8, 0, 15)
+	val.Size = UDim2.new(1, -10, 0, 16)
+	val.Position = UDim2.new(0, 6, 0, 13)
 	val.BackgroundTransparency = 1
 	val.Text = "Loading..."
 	val.TextColor3 = UI_COLORS.TEXT
 	val.Font = Enum.Font.GothamSemibold
-	val.TextSize = 12
+	val.TextSize = 11
 	val.TextXAlignment = Enum.TextXAlignment.Left
 	return val
 end
@@ -502,30 +493,30 @@ local stateT = createInfoCard("HUMANOID STATE")
 
 local actionPanel = Instance.new("Frame", infoWrapper)
 actionPanel.LayoutOrder = 2
-actionPanel.Size = UDim2.new(1, 0, 0, 320)
+actionPanel.Size = UDim2.new(1, 0, 0, 260)
 actionPanel.BackgroundColor3 = UI_COLORS.SIDEBAR
 Instance.new("UICorner", actionPanel).CornerRadius = UDim.new(0, 12)
 
 local actionTitle = Instance.new("TextLabel", actionPanel)
-actionTitle.Size = UDim2.new(1, -20, 0, 35)
-actionTitle.Position = UDim2.new(0, 12, 0, 5)
+actionTitle.Size = UDim2.new(1, -16, 0, 30)
+actionTitle.Position = UDim2.new(0, 10, 0, 4)
 actionTitle.BackgroundTransparency = 1
 actionTitle.Text = "SELECT TARGET PLAYER"
 actionTitle.TextColor3 = UI_COLORS.TEXT
 actionTitle.Font = Enum.Font.GothamBold
-actionTitle.TextSize = 12
+actionTitle.TextSize = 11
 actionTitle.TextXAlignment = Enum.TextXAlignment.Left
 
 local playerScroll = Instance.new("ScrollingFrame", actionPanel)
-playerScroll.Size = UDim2.new(1, -20, 1, -45)
-playerScroll.Position = UDim2.new(0, 10, 0, 38)
+playerScroll.Size = UDim2.new(1, -16, 1, -36)
+playerScroll.Position = UDim2.new(0, 8, 0, 32)
 playerScroll.BackgroundTransparency = 1
 playerScroll.ScrollBarThickness = 4
 playerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 local playerListLayout = Instance.new("UIGridLayout", playerScroll)
-playerListLayout.CellSize = UDim2.new(0.32, 0, 0, 38)
-playerListLayout.CellPadding = UDim2.new(0, 8, 0, 8)
+playerListLayout.CellSize = UDim2.new(0.48, 0, 0, 34)
+playerListLayout.CellPadding = UDim2.new(0, 6, 0, 6)
 
 local function updateInfo(plr)
 	local charPlr = plr.Character
@@ -556,7 +547,7 @@ local function refreshPlayerList()
 		btn.Text = "  " .. p.Name
 		btn.TextColor3 = (currentTarget == p) and UI_COLORS.TEXT or UI_COLORS.TEXT_DIM
 		btn.Font = Enum.Font.GothamSemibold
-		btn.TextSize = 12
+		btn.TextSize = 11
 		btn.TextXAlignment = Enum.TextXAlignment.Left
 		Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8)
 		
@@ -659,30 +650,30 @@ local function setupDupePage(page, isTrade)
 
 	local topPanel = Instance.new("Frame", page)
 	topPanel.Name = "TopPanel"
-	topPanel.Size = UDim2.new(1, -5, 0, 130)
+	topPanel.Size = UDim2.new(1, -5, 0, 115)
 	topPanel.BackgroundColor3 = UI_COLORS.SIDEBAR
 	Instance.new("UICorner", topPanel).CornerRadius = UDim.new(0, 12)
 
 	local countLabel = Instance.new("TextLabel", topPanel)
-	countLabel.Size = UDim2.new(1, -20, 0, 25)
-	countLabel.Position = UDim2.new(0, 12, 0, 8)
+	countLabel.Size = UDim2.new(1, -16, 0, 22)
+	countLabel.Position = UDim2.new(0, 8, 0, 6)
 	countLabel.BackgroundTransparency = 1
 	countLabel.Text = "Target Instances Multiplier: 1"
 	countLabel.TextColor3 = UI_COLORS.TEXT
 	countLabel.Font = Enum.Font.GothamBold
-	countLabel.TextSize = 13
+	countLabel.TextSize = 11
 	countLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 	local sliderBg = Instance.new("Frame", topPanel)
-	sliderBg.Size = UDim2.new(1, -24, 0, 8)
-	sliderBg.Position = UDim2.new(0, 12, 0, 36)
+	sliderBg.Size = UDim2.new(1, -16, 0, 6)
+	sliderBg.Position = UDim2.new(0, 8, 0, 30)
 	sliderBg.BackgroundColor3 = UI_COLORS.CHECKBOX_OFF
-	Instance.new("UICorner", sliderBg).CornerRadius = UDim.new(0, 4)
+	Instance.new("UICorner", sliderBg).CornerRadius = UDim.new(0, 3)
 
 	local sliderBar = Instance.new("Frame", sliderBg)
 	sliderBar.Size = UDim2.new(0, 0, 1, 0)
 	sliderBar.BackgroundColor3 = UI_COLORS.TAB_ACTIVE
-	Instance.new("UICorner", sliderBar).CornerRadius = UDim.new(0, 4)
+	Instance.new("UICorner", sliderBar).CornerRadius = UDim.new(0, 3)
 
 	local draggingSlider = false
 	sliderBg.InputBegan:Connect(function(input)
@@ -711,24 +702,24 @@ local function setupDupePage(page, isTrade)
 	end)
 
 	local btnAll = Instance.new("TextButton", topPanel)
-	btnAll.Size = UDim2.new(0.48, 0, 0, 34)
-	btnAll.Position = UDim2.new(0, 12, 0, 54)
+	btnAll.Size = UDim2.new(0.48, 0, 0, 30)
+	btnAll.Position = UDim2.new(0, 8, 0, 42)
 	btnAll.BackgroundColor3 = UI_COLORS.TAB_ACTIVE
 	btnAll.Text = isTrade and "Auto-Scam All" or "Auto-Duplicate All"
 	btnAll.TextColor3 = UI_COLORS.TEXT
 	btnAll.Font = Enum.Font.GothamSemibold
-	btnAll.TextSize = 12
+	btnAll.TextSize = 11
 	Instance.new("UICorner", btnAll).CornerRadius = UDim.new(0, 8)
 
 	local safeModeActive = false
 	local btnSafe = Instance.new("TextButton", topPanel)
-	btnSafe.Size = UDim2.new(0.48, 0, 0, 34)
-	btnSafe.Position = UDim2.new(0.52, -4, 0, 54)
+	btnSafe.Size = UDim2.new(0.48, 0, 0, 30)
+	btnSafe.Position = UDim2.new(0.52, -2, 0, 42)
 	btnSafe.BackgroundColor3 = UI_COLORS.TAB_INACTIVE
 	btnSafe.Text = "Safe Delay: OFF"
 	btnSafe.TextColor3 = UI_COLORS.TEXT_DIM
 	btnSafe.Font = Enum.Font.GothamSemibold
-	btnSafe.TextSize = 12
+	btnSafe.TextSize = 11
 	Instance.new("UICorner", btnSafe).CornerRadius = UDim.new(0, 8)
 
 	btnSafe.MouseButton1Click:Connect(function()
@@ -739,10 +730,9 @@ local function setupDupePage(page, isTrade)
 	end)
 
 	local boosterActive = false
-
 	local btnBooster = Instance.new("TextButton", topPanel)
-	btnBooster.Size = UDim2.new(1, -24, 0, 30)
-	btnBooster.Position = UDim2.new(0, 12, 0, 94)
+	btnBooster.Size = UDim2.new(1, -16, 0, 28)
+	btnBooster.Position = UDim2.new(0, 8, 0, 78)
 	btnBooster.BackgroundColor3 = UI_COLORS.TAB_INACTIVE
 	btnBooster.Text = "Booster x2: OFF"
 	btnBooster.TextColor3 = UI_COLORS.TEXT_DIM
@@ -759,15 +749,15 @@ local function setupDupePage(page, isTrade)
 
 	local gridContainer = Instance.new("ScrollingFrame", page)
 	gridContainer.Name = "GridContainer"
-	gridContainer.Size = UDim2.new(1, -5, 1, -140)
-	gridContainer.Position = UDim2.new(0, 0, 0, 140)
+	gridContainer.Size = UDim2.new(1, -5, 1, -125)
+	gridContainer.Position = UDim2.new(0, 0, 0, 125)
 	gridContainer.BackgroundTransparency = 1
 	gridContainer.ScrollBarThickness = 4
 	gridContainer.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 	local grid = Instance.new("UIGridLayout", gridContainer)
-	grid.CellSize = UDim2.new(0, 132, 0, 132)
-	grid.CellPadding = UDim2.new(0, 10, 0, 10)
+	grid.CellSize = UDim2.new(0, 115, 0, 115)
+	grid.CellPadding = UDim2.new(0, 8, 0, 8)
 
 	local function executeDuplication(unit)
 		if not unit or not unit.Parent then return end
@@ -797,7 +787,7 @@ local function setupDupePage(page, isTrade)
 	local items = isTrade and scanTrade() or scanInventory()
 	for _, unit in ipairs(items) do
 		local cardBtn = Instance.new("TextButton", gridContainer)
-		cardBtn.Size = UDim2.new(0, 132, 0, 132)
+		cardBtn.Size = UDim2.new(0, 115, 0, 115)
 		cardBtn.BackgroundColor3 = UI_COLORS.TAB_INACTIVE
 		cardBtn.Text = ""
 		cardBtn.Active = true
