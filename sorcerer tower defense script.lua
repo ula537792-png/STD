@@ -40,9 +40,29 @@ screenGui.IgnoreGuiInset = true
 screenGui.DisplayOrder = 999999
 screenGui.Parent = CoreGui
 
--- ГЛАВНЫЙ SCALE (ДЛЯ МАСШТАБИРОВАНИЯ)
+-- АДАПТИВНЫЙ SCALE (АВТОМАТИЧЕСКИЙ ПОДГОН ПОД ПК И ТЕЛЕФОНЫ)
 local uiScale = Instance.new("UIScale", screenGui)
-uiScale.Scale = 1.0
+
+local function updateScale()
+	local viewport = camera.ViewportSize
+	-- Базовое разрешение, под которое создавалось меню (например, стандартный ПК-экран)
+	local baseSize = Vector2.new(1280, 720)
+	
+	-- Вычисляем коэффициент масштабирования с ограничениями, чтобы на телефонах меню не было микроскопическим, а на 4K мониторах — гигантским
+	local scaleX = viewport.X / baseSize.X
+	local scaleY = viewport.Y / baseSize.Y
+	local finalScale = math.clamp(math.min(scaleX, scaleY), 0.65, 1.1)
+	
+	-- Если это мобильное устройство (маленькая ширина экрана), делаем интерфейс чуть крупнее для удобства нажатия пальцем
+	if viewport.X < 800 then
+		finalScale = math.clamp(viewport.X / 750, 0.6, 0.95)
+	end
+	
+	uiScale.Scale = finalScale
+end
+
+updateScale()
+camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale)
 
 -- ЗАСТАВКА
 local welcomeFrame = Instance.new("Frame", screenGui)
@@ -72,9 +92,12 @@ welcomeText.BackgroundTransparency = 1
 welcomeText.TextTransparency = 1
 welcomeText.ZIndex = 6
 
--- ГЛАВНОЕ ОКНО
+-- ГЛАВНОЕ ОКНО (С АДАПТИВНЫМ РАЗМЕРОМ ПОД МАЛЕНЬКИЕ ЭКРАНЫ)
 local main = Instance.new("Frame", screenGui)
-main.Size = UDim2.new(0, 800, 0, 480)
+-- Если экран телефона слишком узкий, окно автоматически сужается, чтобы не выходить за края
+local initialWidth = math.min(800, camera.ViewportSize.X - 40)
+local initialHeight = math.min(480, camera.ViewportSize.Y - 60)
+main.Size = UDim2.new(0, initialWidth, 0, initialHeight)
 main.Position = UDim2.new(0.5, 0, 0.5, 0)
 main.AnchorPoint = Vector2.new(0.5, 0.5)
 main.BackgroundColor3 = UI_COLORS.BG
@@ -85,8 +108,8 @@ main.ClipsDescendants = false
 main.Active = true
 
 local sizeConstraint = Instance.new("UISizeConstraint", main)
-sizeConstraint.MinSize = Vector2.new(500, 320)
-sizeConstraint.MaxSize = Vector2.new(1200, 800)
+sizeConstraint.MinSize = Vector2.new(400, 280)
+sizeConstraint.MaxSize = Vector2.new(1100, 750)
 
 local mainStroke = Instance.new("UIStroke", main)
 mainStroke.Color = UI_COLORS.TAB_ACTIVE
@@ -135,7 +158,7 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- ПРЕМИАЛЬНЫЙ, ЯРКИЙ И НЕОБЫЧНЫЙ УГОЛОК ИЗМЕНЕНИЯ РАЗМЕРА
+-- УГОЛОК ИЗМЕНЕНИЯ РАЗМЕРА
 local resizeHandle = Instance.new("Frame", main)
 resizeHandle.Size = UDim2.new(0, 32, 0, 32)
 resizeHandle.Position = UDim2.new(1, -2, 1, -2)
@@ -150,7 +173,6 @@ resizeStroke.Color = Color3.fromRGB(255, 255, 255)
 resizeStroke.Thickness = 1.5
 resizeStroke.Transparency = 0.4
 
--- Внутренние стильные диагональные полоски для красоты
 for i = 1, 3 do
 	local line = Instance.new("Frame", resizeHandle)
 	line.Size = UDim2.new(0, 18 - (i * 3), 0, 2)
@@ -217,7 +239,7 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Фоновые частицы (строго внутри главного окна)
+-- Фоновые частицы
 local bgContainer = Instance.new("Frame", main)
 bgContainer.Size = UDim2.new(1, 0, 1, 0)
 bgContainer.BackgroundTransparency = 1
@@ -258,9 +280,9 @@ local function startParticles()
 	end
 end
 
--- САЙДБАР
+-- САЙДБАР (С адаптивной шириной под размер окна)
 local sidebar = Instance.new("Frame", main)
-sidebar.Size = UDim2.new(0, 200, 1, 0)
+sidebar.Size = UDim2.new(0, 190, 1, 0)
 sidebar.BackgroundColor3 = UI_COLORS.SIDEBAR
 Instance.new("UICorner", sidebar).CornerRadius = UDim.new(0, 14)
 
@@ -316,8 +338,8 @@ local btnConfig = createTabButton("PC/Mobile", 233)
 
 -- СТРАНИЦЫ
 local pages = Instance.new("Frame", main)
-pages.Size = UDim2.new(1, -215, 1, -16)
-pages.Position = UDim2.new(0, 208, 0, 8)
+pages.Size = UDim2.new(1, -205, 1, -16)
+pages.Position = UDim2.new(0, 198, 0, 8)
 pages.BackgroundTransparency = 1
 
 local function createPage()
@@ -357,7 +379,7 @@ local function setActiveTab(btn, page)
 	configPage.Visible = (configPage == page)
 end
 
--- === SHIFT LOCK (GLOBAL SETUP) ===
+-- SHIFT LOCK
 local shiftLockEnabled = false
 local isShiftLocked = false
 
@@ -380,7 +402,6 @@ shiftLockStroke.Color = UI_COLORS.TAB_ACTIVE
 shiftLockStroke.Thickness = 1.5
 shiftLockStroke.Transparency = 0.5
 
--- Переключение режима переноса / клика по шифклоку
 local isShiftLockRepositioning = false
 local slDragging = false
 local slDragStart, slStartPos
@@ -423,7 +444,7 @@ RunService.RenderStepped:Connect(function(dt)
 	end
 end)
 
--- === PC / MOBILE CONFIG PAGE ===
+-- PC / MOBILE CONFIG PAGE
 local closeMode = "key"
 
 local configTitle = Instance.new("TextLabel", configPage)
@@ -494,7 +515,6 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 	end
 end)
 
--- Добавление настроек Shift Lock в вкладку PC/Mobile
 local slDivider = Instance.new("Frame", configPage)
 slDivider.Size = UDim2.new(1, -5, 0, 15)
 slDivider.BackgroundTransparency = 1
@@ -508,7 +528,6 @@ slConfigTitle.Font = Enum.Font.GothamBold
 slConfigTitle.TextSize = 12
 slConfigTitle.TextXAlignment = Enum.TextXAlignment.Left
 
--- Кнопка включения Shift Lock
 local btnSLToggle = Instance.new("TextButton", configPage)
 btnSLToggle.Size = UDim2.new(1, -5, 0, 42)
 btnSLToggle.BackgroundColor3 = UI_COLORS.TAB_INACTIVE
@@ -531,7 +550,6 @@ btnSLToggle.MouseButton1Click:Connect(function()
 	end
 end)
 
--- Кнопка настройки положения Shift Lock (нажал 1 раз - переносишь, нажал 2 раз - зафиксировал)
 local btnSLPos = Instance.new("TextButton", configPage)
 btnSLPos.Size = UDim2.new(1, -5, 0, 42)
 btnSLPos.BackgroundColor3 = UI_COLORS.TAB_INACTIVE
@@ -561,7 +579,7 @@ btnSLPos.MouseButton1Click:Connect(function()
 	end
 end)
 
--- === PLAYER MODULE ===
+-- PLAYER MODULE
 local flyEnabled = false
 local flySpeed = 50
 local speedEnabled = false
@@ -713,7 +731,7 @@ RunService.Heartbeat:Connect(function(dt)
 	end
 end)
 
--- === PLAYER INFO ===
+-- PLAYER INFO
 local currentTarget = player
 
 local infoWrapper = Instance.new("Frame", infoPage)
@@ -879,7 +897,7 @@ task.spawn(function()
 	end
 end)
 
--- === DUPE & TRADE SCAM ===
+-- DUPE & TRADE SCAM
 local dupeCount = 1
 local tradeCount = 1
 
