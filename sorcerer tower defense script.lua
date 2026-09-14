@@ -40,20 +40,16 @@ screenGui.IgnoreGuiInset = true
 screenGui.DisplayOrder = 999999
 screenGui.Parent = CoreGui
 
--- АДАПТИВНЫЙ SCALE (АВТОМАТИЧЕСКИЙ ПОДГОН ПОД ПК И ТЕЛЕФОНЫ)
 local uiScale = Instance.new("UIScale", screenGui)
 
 local function updateScale()
 	local viewport = camera.ViewportSize
-	-- Базовое разрешение, под которое создавалось меню (например, стандартный ПК-экран)
 	local baseSize = Vector2.new(1280, 720)
 	
-	-- Вычисляем коэффициент масштабирования с ограничениями, чтобы на телефонах меню не было микроскопическим, а на 4K мониторах — гигантским
 	local scaleX = viewport.X / baseSize.X
 	local scaleY = viewport.Y / baseSize.Y
 	local finalScale = math.clamp(math.min(scaleX, scaleY), 0.65, 1.1)
 	
-	-- Если это мобильное устройство (маленькая ширина экрана), делаем интерфейс чуть крупнее для удобства нажатия пальцем
 	if viewport.X < 800 then
 		finalScale = math.clamp(viewport.X / 750, 0.6, 0.95)
 	end
@@ -64,7 +60,6 @@ end
 updateScale()
 camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale)
 
--- ЗАСТАВКА
 local welcomeFrame = Instance.new("Frame", screenGui)
 welcomeFrame.Size = UDim2.new(0, 360, 0, 90)
 welcomeFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
@@ -92,9 +87,7 @@ welcomeText.BackgroundTransparency = 1
 welcomeText.TextTransparency = 1
 welcomeText.ZIndex = 6
 
--- ГЛАВНОЕ ОКНО (С АДАПТИВНЫМ РАЗМЕРОМ ПОД МАЛЕНЬКИЕ ЭКРАНЫ)
 local main = Instance.new("Frame", screenGui)
--- Если экран телефона слишком узкий, окно автоматически сужается, чтобы не выходить за края
 local initialWidth = math.min(800, camera.ViewportSize.X - 40)
 local initialHeight = math.min(480, camera.ViewportSize.Y - 60)
 main.Size = UDim2.new(0, initialWidth, 0, initialHeight)
@@ -117,7 +110,6 @@ mainStroke.Transparency = 1
 mainStroke.Thickness = 1.5
 Instance.new("UICorner", main).CornerRadius = UDim.new(0, 14)
 
--- КНОПКА МЕНЮ НА ЭКРАНЕ (ДЛЯ РЕЖИМА BUTTON)
 local toggleMenuBtn = Instance.new("TextButton", screenGui)
 toggleMenuBtn.Size = UDim2.new(0, 120, 0, 40)
 toggleMenuBtn.Position = UDim2.new(0, 30, 0, 30)
@@ -136,7 +128,6 @@ toggleMenuStroke.Color = UI_COLORS.TAB_ACTIVE
 toggleMenuStroke.Thickness = 1.5
 toggleMenuStroke.Transparency = 0.3
 
--- Перетаскивание экранной кнопки меню
 local btnDragging, btnDragStart, btnStartPos
 toggleMenuBtn.InputBegan:Connect(function(input)
 	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
@@ -158,7 +149,6 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- УГОЛОК ИЗМЕНЕНИЯ РАЗМЕРА
 local resizeHandle = Instance.new("Frame", main)
 resizeHandle.Size = UDim2.new(0, 32, 0, 32)
 resizeHandle.Position = UDim2.new(1, -2, 1, -2)
@@ -214,7 +204,6 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Перетаскивание главного окна
 local isInteractingWithSlider = false
 local dragging, dragStart, startPos
 
@@ -239,7 +228,6 @@ UserInputService.InputChanged:Connect(function(input)
 	end
 end)
 
--- Фоновые частицы
 local bgContainer = Instance.new("Frame", main)
 bgContainer.Size = UDim2.new(1, 0, 1, 0)
 bgContainer.BackgroundTransparency = 1
@@ -280,7 +268,6 @@ local function startParticles()
 	end
 end
 
--- САЙДБАР (С адаптивной шириной под размер окна)
 local sidebar = Instance.new("Frame", main)
 sidebar.Size = UDim2.new(0, 190, 1, 0)
 sidebar.BackgroundColor3 = UI_COLORS.SIDEBAR
@@ -336,7 +323,6 @@ local btnInv = createTabButton("Dupe", 149)
 local btnTrade = createTabButton("Trade Scam", 191)
 local btnConfig = createTabButton("PC/Mobile", 233)
 
--- СТРАНИЦЫ
 local pages = Instance.new("Frame", main)
 pages.Size = UDim2.new(1, -205, 1, -16)
 pages.Position = UDim2.new(0, 198, 0, 8)
@@ -379,7 +365,6 @@ local function setActiveTab(btn, page)
 	configPage.Visible = (configPage == page)
 end
 
--- SHIFT LOCK
 local shiftLockEnabled = false
 local isShiftLocked = false
 
@@ -444,7 +429,6 @@ RunService.RenderStepped:Connect(function(dt)
 	end
 end)
 
--- PC / MOBILE CONFIG PAGE
 local closeMode = "key"
 
 local configTitle = Instance.new("TextLabel", configPage)
@@ -579,7 +563,6 @@ btnSLPos.MouseButton1Click:Connect(function()
 	end
 end)
 
--- PLAYER MODULE
 local flyEnabled = false
 local flySpeed = 50
 local speedEnabled = false
@@ -731,7 +714,6 @@ RunService.Heartbeat:Connect(function(dt)
 	end
 end)
 
--- PLAYER INFO
 local currentTarget = player
 
 local infoWrapper = Instance.new("Frame", infoPage)
@@ -897,7 +879,6 @@ task.spawn(function()
 	end
 end)
 
--- DUPE & TRADE SCAM
 local dupeCount = 1
 local tradeCount = 1
 
@@ -1160,7 +1141,6 @@ btnTrade.MouseButton1Click:Connect(function()
 end)
 btnConfig.MouseButton1Click:Connect(function() setActiveTab(btnConfig, configPage) end)
 
--- ЗАПУСК АНИМАЦИИ ИНТРО
 task.spawn(function()
 	local introInfo = TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 	TweenService:Create(welcomeFrame, introInfo, {BackgroundTransparency = 0.05}):Play()
